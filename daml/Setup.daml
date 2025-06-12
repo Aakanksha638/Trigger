@@ -1,0 +1,18 @@
+module Setup where
+
+import TokenExample
+
+template Setup
+  with
+    operator : Party
+    issuer : Party
+    owner : Party
+  where
+    signatory operator
+
+    choice CreateToken : ContractId Token
+      with
+        amount : Decimal
+      controller operator
+      do
+        create Token with issuer, owner, amount

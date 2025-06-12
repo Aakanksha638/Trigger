@@ -1,0 +1,11 @@
+sdk-version: 2.10.1
+name: trigger-project
+version: 0.1.0
+source: daml
+exposed-modules:
+  - DepositExample
+  - DepositTrigger
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-trigger

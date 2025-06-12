@@ -1,0 +1,22 @@
+module TokenTrigger where
+
+import Daml.Trigger
+import DA.Set as Set
+import TokenExample
+
+setup : TriggerA ()
+setup = TriggerA
+  { initialize = pure ()
+  , rule = ruleFunc
+  , heartbeat = None
+  }
+
+ruleFunc : ActiveContractSet -> () -> TriggerACommands ()
+ruleFunc acs _ = do
+  let tokens = collectContracts @Token acs
+  let cmds = 
+        [ exerciseCmd cid Redeem ()
+        | (cid, token) <- tokens
+        , token.amount < 50.0
+        ]
+  toCommands cmds
