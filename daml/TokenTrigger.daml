@@ -1,22 +1,24 @@
 module TokenTrigger where
 
 import Daml.Trigger
-import DA.Set as Set
 import TokenExample
+import DA.Action (void)
 
-setup : TriggerA ()
-setup = TriggerA
+setup : Trigger ()
+setup = Trigger
   { initialize = pure ()
   , rule = ruleFunc
+  , updateState = \_ -> pure ()
+  , registeredTemplates = RegisteredTemplates [registeredTemplate @Token]
   , heartbeat = None
   }
 
-ruleFunc : ActiveContractSet -> () -> TriggerACommands ()
-ruleFunc acs _ = do
-  let tokens = collectContracts @Token acs
-  let cmds = 
-        [ exerciseCmd cid Redeem ()
+ruleFunc : Party -> TriggerA () ()
+ruleFunc _ = do
+  tokens <- query @Token
+  let cmds =
+        [ exerciseCmd cid Redeem
         | (cid, token) <- tokens
         , token.amount < 50.0
         ]
-  toCommands cmds
+  void (emitCommands cmds [])
